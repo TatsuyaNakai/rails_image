@@ -6,18 +6,16 @@ class UsersController < ApplicationController
   end
 
   def create
-    byebug
-    user=User.new(user_params)
-    # モデルを作成してないのにどうやってcreateをするのか。。
-    user.save
-
+    user=User.create!(user_params)
+    # masterと違って、migrationファイルを消して、モデルで上書きした。
+    # consoleで確認済み。
     
     bucket= Aws::S3::Resource.new(
-      :region=> 'ap-northeast-1',
+      :region => 'ap-northeast-1',
       :access_key_id => ENV['AWS_ACCCES_KEY'],
       :secret_access_key => ENV['AWS_ACCCES_SECRET_KEY'],
-    ).buket('sampleimage01')
-    buket.object("user_id_#{user.id}_profile_image").put(:body =>params[:profile_image])
+    ).bucket('sampleimage01')
+    bucket.object("user_id_#{user.id}_profile_image").put(:body =>params[:profile_image])
     render json: user
   end
 
