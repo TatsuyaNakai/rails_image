@@ -14,6 +14,7 @@ function Users() {
     let maxHeight= 250;
 
     let img=new Image();
+    // 実態のない写真を作成する。
     img.onload=()=>{
       let imgWidth=   img.width;
       let imgHeight=  img.height;
@@ -31,9 +32,9 @@ function Users() {
       setState({profileImage: resizeData});
       // state.profileImageを更新
       setFieldValue("profile_image", resizeData);
-      // setFieldValueっていう関数を実行してる。
-      
-      // それがどこにあるのかがわからない。。
+      // setFieldValueは、formikの中に存在してる関数で、第一引数のキーを第二引数に更新することができる。
+      // profile_imageを、jpegにした画像に更新する。
+      // 現状、setFieldValueが定義されてない状態で関数を実行できない。
     };
     img.src= URL.createObjectURL(e.target.files[0]);
     // createObjectは引数を参照するオブジェクトURLを作成する。
@@ -41,6 +42,7 @@ function Users() {
   };
 
   const createUser=(payload)=>{
+    console.log(payload)
     axios.post("http://localhost:3000/users", payload)
     .then(({data, message})=>{
       if(data){
@@ -54,22 +56,23 @@ function Users() {
     });
   };
 
+  
   return (
     <Formik
       initialValues={{
         name: "",
         profile_image: ""
       }}
-      onSubmit={()=>createUser()}
+      onSubmit={(values)=>createUser(values)}
     >
-      {({setFieldValue, isSubmitting}) => {
+      {({isSubmitting, setFieldValue}) => {
         return (
           <Form>
             <label>プロフィール画像</label>
             <img 
               className="profile-image"
               src={!state.profileImage?  "" : state.profileImage}
-              alt=" "
+              alt=""
             />
             <React.Fragment>
               <Field 
@@ -77,6 +80,7 @@ function Users() {
                 type="file"
                 name="profile_image2"
                 onChange={(e)=>setImage(e, setFieldValue)}
+                // Fieldに変更があった時にsetImageを実行する。
               />
               <Field type="hidden" name="profile_image" />
             </React.Fragment>

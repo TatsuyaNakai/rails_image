@@ -6,8 +6,10 @@ class UsersController < ApplicationController
   end
 
   def create
-    user=User.create!(user_params)
+    byebug
+    user=User.new(user_params)
     # モデルを作成してないのにどうやってcreateをするのか。。
+    user.save
 
     
     bucket= Aws::S3::Resource.new(
@@ -21,7 +23,7 @@ class UsersController < ApplicationController
 
   private
   def user_params
-    params.permit(:name, :image_data)
+    params.require(:user).permit(:name, :profile_image)
     # name, image_dataカラムだけを許可する。
   end
 end
